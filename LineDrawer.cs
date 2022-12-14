@@ -53,26 +53,6 @@ public class LineDrawer : MonoBehaviour
 
             hand.SetActive(true);
 
-            //Debug.Log(mouseInput);
-
-            if (773 < mouseInput.x)
-            {
-                mouseInput.x = 773;
-            }
-            else if (mouseInput.x < 330)
-            {
-                mouseInput.x = 330;
-            }
-
-            if (310 < mouseInput.y)
-            {
-                mouseInput.y = 310;
-            }
-            else if (mouseInput.y < 72)
-            {
-                mouseInput.y = 72;
-            }
-
             mouseInput = new Vector3(mouseInput.x, mouseInput.y, 1);
 
             mouseInput = Camera.main.ScreenToViewportPoint(mouseInput);
@@ -89,7 +69,7 @@ public class LineDrawer : MonoBehaviour
 
             //Debug.Log(fixYPos);
 
-            transform.position = new Vector3(mouseInput.x + fixXPos, mouseInput.y + 49.5f + fixYPos, zPos);
+            transform.position = new Vector3(mouseInput.x, mouseInput.y, zPos);
 
             positionCount++;
             lineRenderer.positionCount = positionCount;

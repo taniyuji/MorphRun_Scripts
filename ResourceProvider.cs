@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class ResourceProvider : MonoBehaviour
 {
     public static ResourceProvider i;
 
     [SerializeField]
-    private LineDrawer _lineDrawer;
+    private CinemachineVirtualCamera _cineCam;
 
-    public LineDrawer lineDrawer
+    public CinemachineVirtualCamera cineCam
     {
-        get { return _lineDrawer; }
+        get { return _cineCam; }
     }
 
     void Awake()

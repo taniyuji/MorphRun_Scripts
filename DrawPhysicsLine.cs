@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class DrawPhysicsLine : MonoBehaviour
 {
-    
+
     [Header("線を構成するブロック")]
     [SerializeField] GameObject linePrefab;
     [Header("線の単位長")]
@@ -124,7 +124,7 @@ public class DrawPhysicsLine : MonoBehaviour
         Vector3 endPos = drawPos;
         float distance = Vector3.Distance(startPos, endPos);
 
-        if(index >= lines1.Count || index >= lines2.Count) 
+        if (index >= lines1.Count || index >= lines2.Count)
         {
             Debug.Log("no More Objects to draw");
 
