@@ -26,8 +26,6 @@ public class ShapeAnimation : MonoBehaviour
 
     private Vector3 scaleVector;
 
-    private ShapeInputController shapeInputController;
-
     private ComponentProvider componentProvider;
 
     private PlayerMover playerMover;
@@ -45,8 +43,6 @@ public class ShapeAnimation : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        shapeInputController = GetComponent<ShapeInputController>();
-
         playerMover = GetComponent<PlayerMover>();
 
         enemyBehavior = GetComponent<EnemyBehavior>();
@@ -74,7 +70,7 @@ public class ShapeAnimation : MonoBehaviour
 
             scaleTimeCounter += Time.deltaTime;
 
-            if(scaleTimeCounter > scaleTime)
+            if (scaleTimeCounter > scaleTime)
             {
                 scaleTimeCounter = 0;
 
@@ -99,19 +95,13 @@ public class ShapeAnimation : MonoBehaviour
             eyesParent.sprite = eyesSprite[0].sprite;
         }
 
-        if (Input.GetMouseButtonUp(0) && gameObject.CompareTag("Player"))
-        {
-            //Debug.Log("scale");
-            PlayMorphAnimation(shapeInputController.getPointerDownPosition);
-        }
-
         if (UnityEngine.Random.Range(0, 200) == 0)
         {
             StartCoroutine(blink());
         }
     }
 
-    private void PlayMorphAnimation(Vector3 eyePosition)
+    public void PlayMorphAnimation(Vector3 eyePosition)
     {
         scaleVector = Vector3.one * scaleAmount;
 
@@ -122,7 +112,9 @@ public class ShapeAnimation : MonoBehaviour
 
         eyesParent.transform.localPosition = new Vector3(eyePosition.x,
                                                          eyePosition.y,
-                                                         eyesParent.transform.localPosition.z);
+                                                         eyePosition.z);
+
+        if (gameObject.CompareTag("Player")) SoundManager.i.PlayOneShot(1, 0.5f);
     }
 
     private IEnumerator blink()

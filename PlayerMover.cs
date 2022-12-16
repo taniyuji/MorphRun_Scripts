@@ -61,25 +61,10 @@ public class PlayerMover : MonoBehaviour
 
         _rigidbody.AddForce(new Vector3(0, 0, hitBackAmount.z), ForceMode.Impulse);
 
-        StartCoroutine(HitBackY());
-
         yield return new WaitForSeconds(beHitTime);
-
-        transform.DOMove(new Vector3(transform.position.x, defaultYPosition, transform.position.z), 0.3f);
-
-        _rigidbody.useGravity = false;
 
         //Debug.Log("collide");
         isCollide = false;
-    }
-
-    private IEnumerator HitBackY()
-    {
-        yield return new WaitForSeconds(0.05f);
-
-        _rigidbody.useGravity = true;
-
-        _rigidbody.AddForce(new Vector3(0, hitBackAmount.y, 0), ForceMode.Impulse);
     }
 
 }

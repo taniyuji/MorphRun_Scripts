@@ -18,6 +18,9 @@ public class DrawPhysicsLine : MonoBehaviour
 
     [SerializeField] private int instantiateAmount;
 
+    [SerializeField]
+    private float minimumLength = 2;
+
     // 一つ前のタッチされたpositionを保持
     private Vector3 touchPos;
 
@@ -34,6 +37,10 @@ public class DrawPhysicsLine : MonoBehaviour
     private MeshRenderer mesh;
 
     private BoxCollider boxCollider;
+
+    private float shapeLength = 0;
+
+    private bool canDraw = false;
 
     void Awake()
     {
@@ -62,16 +69,31 @@ public class DrawPhysicsLine : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            ChangeShape();
-        }
-    }
-
     public void ChangeShape()
     {
+        if (!canDraw)
+        {
+            for (int i = 0; i < index; i++)
+            {
+                if (isUsingList1)
+                {
+                    lines1[i].SetActive(false);
+
+                    lines1[i].transform.parent = null;
+                }
+                else
+                {
+                    lines2[i].SetActive(false);
+
+                    lines2[i].transform.parent = null;
+                }
+            }
+
+            index = 0;
+            shapeLength = 0;
+
+            return;
+        }
 
         if (boxCollider.enabled)
         {
@@ -99,9 +121,13 @@ public class DrawPhysicsLine : MonoBehaviour
             }
         }
 
+        ResourceProvider.i.shapeAnimation.PlayMorphAnimation(ResourceProvider.i.inputController.getPointerDownPosition);
+
         //Debug.Log("shifted" + lines1[0].activeSelf + lines2[0].activeSelf);
 
         index = 0;
+        shapeLength = 0;
+        canDraw = false;
     }
 
     public void PenDown(Vector3 drawPos)
@@ -124,6 +150,15 @@ public class DrawPhysicsLine : MonoBehaviour
         Vector3 endPos = drawPos;
         float distance = Vector3.Distance(startPos, endPos);
 
+        //Debug.Log(shapeLength);
+
+        if (shapeLength > minimumLength && !canDraw)
+        {
+            SoundManager.i.PlayOneShot(6, 0.5f);
+
+            canDraw = true;
+        }
+
         if (index >= lines1.Count || index >= lines2.Count)
         {
             Debug.Log("no More Objects to draw");
@@ -134,6 +169,8 @@ public class DrawPhysicsLine : MonoBehaviour
         if (distance > lineLength * Time.deltaTime / Time.fixedDeltaTime)
         {
             // GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            shapeLength += distance;
 
             GameObject obj = isUsingList1 ? lines1[index] : lines2[index];
 
@@ -147,5 +184,7 @@ public class DrawPhysicsLine : MonoBehaviour
 
             index++;
         }
+
+       
     }
 }

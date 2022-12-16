@@ -15,6 +15,30 @@ public class ResourceProvider : MonoBehaviour
         get { return _cineCam; }
     }
 
+    [SerializeField]
+    private ShapeInputController _inputController;
+
+    public ShapeInputController inputController
+    {
+        get { return _inputController; }
+    }
+
+    [SerializeField]
+    private DrawPhysicsLine _drawer;
+
+    public DrawPhysicsLine drawer
+    {
+        get { return _drawer; }
+    }
+
+    [SerializeField]
+    private ShapeAnimation _shapeAnimation;
+
+    public ShapeAnimation shapeAnimation
+    {
+        get { return _shapeAnimation; }
+    }
+
     void Awake()
     {
         i = this;

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using System;
+using UniRx;
 
 public class ShapeInputController : MonoBehaviour
 {
@@ -9,26 +11,12 @@ public class ShapeInputController : MonoBehaviour
     [SerializeField]
     private Transform drawPointerTransform;
 
-    public Vector3 getPointerPosition
-    {
-        get { return drawPointerTransform.position; }
-    }
-
     public Vector3 getPointerDownPosition { get; private set; }
-
-    private DrawPhysicsLine drawer;
-
-    private PlayerMover playerMover;
 
     private CinemachineTransposer transposer;
 
-
     void Awake()
     {
-        drawer = GetComponent<DrawPhysicsLine>();
-
-        playerMover = GetComponent<PlayerMover>();
-
         transposer = ResourceProvider.i.cineCam.GetCinemachineComponent<CinemachineTransposer>();
     }
 
@@ -40,11 +28,27 @@ public class ShapeInputController : MonoBehaviour
 
     private void GetDrawVector()
     {
+        if (Input.GetMouseButtonUp(0))
+        {
+            ResourceProvider.i.drawer.ChangeShape();
+        }
+
         if (!Input.GetMouseButtonDown(0) && !Input.GetMouseButton(0)) return;
 
-        if (playerMover.isCollide) return;
-
         var mouseInput = Input.mousePosition;
+
+        Ray ray = Camera.main.ScreenPointToRay(mouseInput);
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            if (!hit.collider.gameObject.CompareTag("Player")) return;
+        }
+        else
+        {
+            return;
+        }
 
         //Debug.Log(mouseInput);
 
@@ -62,14 +66,17 @@ public class ShapeInputController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            drawer.PenDown(drawPointerTransform.localPosition);
+            ResourceProvider.i.drawer.PenDown(drawPointerTransform.localPosition);
 
-            getPointerDownPosition = drawPointerTransform.localPosition;
+            var fixedPosition
+                 = new Vector3(drawPointerTransform.localPosition.x, drawPointerTransform.localPosition.y, drawPointerTransform.localPosition.z + 0.6f);
+
+            getPointerDownPosition = fixedPosition;
         }
 
         if (Input.GetMouseButton(0))
         {
-            drawer.PenMove(drawPointerTransform.localPosition);
+            ResourceProvider.i.drawer.PenMove(drawPointerTransform.localPosition);
         }
 
     }
