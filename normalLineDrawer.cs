@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//LineRendererを制御するスクリプト
 public class normalLineDrawer : MonoBehaviour
 {
    

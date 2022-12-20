@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
+//シーン上にひとつしかないものの参照を提供するスクリプト
 public class ResourceProvider : MonoBehaviour
 {
     public static ResourceProvider i;
@@ -37,6 +38,14 @@ public class ResourceProvider : MonoBehaviour
     public ShapeAnimation shapeAnimation
     {
         get { return _shapeAnimation; }
+    }
+
+    [SerializeField]
+    private SpriteRenderer _ok;
+
+    public SpriteRenderer ok
+    {
+        get { return _ok; }
     }
 
     void Awake()

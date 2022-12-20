@@ -5,15 +5,14 @@ using System;
 using UniRx;
 using DG.Tweening;
 
+//Playerの動きを制御するスクリプト
 public class PlayerMover : MonoBehaviour
 {
-    private float moveSpeed = 1.5f;
+    private float moveSpeed = 2f;
 
     private Vector3 hitBackAmount = new Vector3(0, 3f, 3f);
 
-    private float beHitTime = 0.6f;
-
-    private CollisionInformationProvider collisionInformationProvider;
+    private float damagedTime = 0.6f;
 
     private Rigidbody _rigidbody;
 
@@ -25,8 +24,6 @@ public class PlayerMover : MonoBehaviour
 
     void Awake()
     {
-        collisionInformationProvider = GetComponent<CollisionInformationProvider>();
-
         _rigidbody = GetComponent<Rigidbody>();
 
         moveVector = new Vector3(0, 0, -moveSpeed);
@@ -38,7 +35,7 @@ public class PlayerMover : MonoBehaviour
     {
         if (collisionInfo.gameObject.CompareTag("Obstacle") && !isCollide)
         {
-            StartCoroutine(DamagedBehavior());
+            StartCoroutine(DamagedBehavior());//障害物と衝突した場合の挙動
 
             if (gameObject.CompareTag("Player"))
             {
@@ -47,8 +44,7 @@ public class PlayerMover : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (!isCollide) _rigidbody.velocity = moveVector;
     }
@@ -59,9 +55,10 @@ public class PlayerMover : MonoBehaviour
 
         _rigidbody.velocity = Vector3.zero;
 
+        //後ろにノックバックさせる
         _rigidbody.AddForce(new Vector3(0, 0, hitBackAmount.z), ForceMode.Impulse);
 
-        yield return new WaitForSeconds(beHitTime);
+        yield return new WaitForSeconds(damagedTime);
 
         //Debug.Log("collide");
         isCollide = false;

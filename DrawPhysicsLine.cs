@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
+using System;
 
 public class DrawPhysicsLine : MonoBehaviour
 {
@@ -71,6 +73,8 @@ public class DrawPhysicsLine : MonoBehaviour
 
     public void ChangeShape()
     {
+        ResourceProvider.i.ok.enabled = false;
+        
         if (!canDraw)
         {
             for (int i = 0; i < index; i++)
@@ -155,6 +159,8 @@ public class DrawPhysicsLine : MonoBehaviour
         if (shapeLength > minimumLength && !canDraw)
         {
             SoundManager.i.PlayOneShot(6, 0.5f);
+
+            ResourceProvider.i.ok.enabled = true;
 
             canDraw = true;
         }

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System;
 using UniRx;
 
+//変形時のアニメーションを制御するスクリプト
 public class ShapeAnimation : MonoBehaviour
 {
     [SerializeField]
@@ -25,8 +26,6 @@ public class ShapeAnimation : MonoBehaviour
     private Sequence sequence;
 
     private Vector3 scaleVector;
-
-    private ComponentProvider componentProvider;
 
     private PlayerMover playerMover;
 
@@ -64,40 +63,49 @@ public class ShapeAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isGoal)
+        GoalAnimation();
+
+        if(isGoal) return;
+
+        collideEyes();
+
+        if (UnityEngine.Random.Range(0, 200) == 0)//1/200の確率で瞬きさせる
         {
-            eyesParent.sprite = eyesSprite[3].sprite;
+            StartCoroutine(blink());
+        }
+    }
 
-            scaleTimeCounter += Time.deltaTime;
+    private void GoalAnimation()
+    {
+        if (!isGoal) return;
 
-            if (scaleTimeCounter > scaleTime)
-            {
-                scaleTimeCounter = 0;
+        eyesParent.sprite = eyesSprite[3].sprite;
 
-                isPlus = !isPlus;
-            }
+        scaleTimeCounter += Time.deltaTime;
 
-            scaleVector = isPlus ? Vector3.one * 0.003f : Vector3.one * -0.003f;
+        if (scaleTimeCounter > scaleTime)
+        {
+            scaleTimeCounter = 0;
 
-            transform.localScale += scaleVector;
-
-            return;
+            isPlus = !isPlus;
         }
 
-        if (playerMover.isCollide)
+        scaleVector = isPlus ? Vector3.one * 0.003f : Vector3.one * -0.003f;
+
+        transform.localScale += scaleVector;
+    }
+
+    private void collideEyes()
+    {
+        if (playerMover.isCollide)//衝突した際に変更
         {
             eyesParent.sprite = eyesSprite[2].sprite;
 
             return;
         }
-        else if (!playerMover.isCollide && eyesParent.sprite == eyesSprite[2].sprite)
+        else if (!playerMover.isCollide && eyesParent.sprite == eyesSprite[2].sprite)//衝突挙動が終わり、まだ目が戻っていない場合
         {
             eyesParent.sprite = eyesSprite[0].sprite;
-        }
-
-        if (UnityEngine.Random.Range(0, 200) == 0)
-        {
-            StartCoroutine(blink());
         }
     }
 

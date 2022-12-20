@@ -5,6 +5,7 @@ using Cinemachine;
 using System;
 using UniRx;
 
+//プレイヤー変形時の入力処理を制御するスクリプト
 public class ShapeInputController : MonoBehaviour
 {
 
@@ -28,19 +29,41 @@ public class ShapeInputController : MonoBehaviour
 
     private void GetDrawVector()
     {
+        //ドラッグ終了時に変形させる
         if (Input.GetMouseButtonUp(0))
         {
             ResourceProvider.i.drawer.ChangeShape();
         }
+       
+        if (Input.GetMouseButtonDown(0))
+        {
+            CalculatePointerPosition();
+            ResourceProvider.i.drawer.PenDown(drawPointerTransform.localPosition);
 
-        if (!Input.GetMouseButtonDown(0) && !Input.GetMouseButton(0)) return;
+            var fixedPosition
+                 = new Vector3(drawPointerTransform.localPosition.x, drawPointerTransform.localPosition.y, drawPointerTransform.localPosition.z + 0.6f);
 
+            getPointerDownPosition = fixedPosition;
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            CalculatePointerPosition();
+            ResourceProvider.i.drawer.PenMove(drawPointerTransform.localPosition);
+        }
+    }
+
+    //pointerのポジションを取得
+    private void CalculatePointerPosition()
+    {
         var mouseInput = Input.mousePosition;
 
         Ray ray = Camera.main.ScreenPointToRay(mouseInput);
 
         RaycastHit hit;
 
+        //描写可能範囲外に描いた場合はここで返す
+        //マウスをクリックするとPlayerTag持ちのキャンバスが出現し、それが描写可能範囲となる。
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             if (!hit.collider.gameObject.CompareTag("Player")) return;
@@ -52,6 +75,7 @@ public class ShapeInputController : MonoBehaviour
 
         //Debug.Log(mouseInput);
 
+        //cinemaCineのtransposerのzポジションを代入し、マウス入力とのずれを修正
         mouseInput = new Vector3(mouseInput.x, mouseInput.y, transposer.m_FollowOffset.z);
 
         var fixedMouseInput = Camera.main.ScreenToWorldPoint(mouseInput);
@@ -59,25 +83,6 @@ public class ShapeInputController : MonoBehaviour
         //Debug.Log(fixX);
 
         drawPointerTransform.position = new Vector3(fixedMouseInput.x, fixedMouseInput.y, drawPointerTransform.position.z);
-
-        drawPointerTransform.localPosition = new Vector3(drawPointerTransform.localPosition.x,
-                                                         drawPointerTransform.localPosition.y,
-                                                         drawPointerTransform.localPosition.z);
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            ResourceProvider.i.drawer.PenDown(drawPointerTransform.localPosition);
-
-            var fixedPosition
-                 = new Vector3(drawPointerTransform.localPosition.x, drawPointerTransform.localPosition.y, drawPointerTransform.localPosition.z + 0.6f);
-
-            getPointerDownPosition = fixedPosition;
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            ResourceProvider.i.drawer.PenMove(drawPointerTransform.localPosition);
-        }
 
     }
 }

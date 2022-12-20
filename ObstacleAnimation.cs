@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+//障害物のアニメーションを制御するスクリプト
 public class ObstacleAnimation : MonoBehaviour
 {
     private float ScaleAmount = 0.2f;
@@ -23,14 +24,9 @@ public class ObstacleAnimation : MonoBehaviour
         defaultScale = transform.localScale;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void OnTriggerEnter(Collider other)
     {
+        //プレイヤーが自分（障害物）を通り過ぎたらアニメーションを開始する。
         if (other.gameObject.CompareTag("Player") && !isPlaying)
         {
             isPlaying = true;
