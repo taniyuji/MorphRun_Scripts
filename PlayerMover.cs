@@ -16,11 +16,25 @@ public class PlayerMover : MonoBehaviour
 
     private Rigidbody _rigidbody;
 
-    public bool isCollide { get; private set; } = false;
-
     private Vector3 moveVector;
 
     private float defaultYPosition;
+
+    private Subject<Unit> _isGoal = new Subject<Unit>();
+
+    public IObservable<Unit> isGoal
+    {
+        get { return _isGoal; }
+    }
+
+    public enum PlayerState
+    {
+        Running,
+        IsCollide,
+        IsGoal,
+    }
+
+    public PlayerState state { get; private set; } = PlayerState.Running;
 
     void Awake()
     {
@@ -33,7 +47,7 @@ public class PlayerMover : MonoBehaviour
 
     void OnCollisionEnter(Collision collisionInfo)
     {
-        if (collisionInfo.gameObject.CompareTag("Obstacle") && !isCollide)
+        if (collisionInfo.gameObject.CompareTag("Obstacle") && state != PlayerState.IsCollide)
         {
             StartCoroutine(DamagedBehavior());//障害物と衝突した場合の挙動
 
@@ -44,14 +58,30 @@ public class PlayerMover : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Goal"))
+        {
+            _isGoal.OnNext(Unit.Default);
+
+            state = PlayerState.IsGoal;
+        }
+    }
+
     void FixedUpdate()
     {
-        if (!isCollide) _rigidbody.velocity = moveVector;
+        if (state == PlayerState.Running) _rigidbody.velocity = moveVector;
+        else if (state == PlayerState.IsGoal && moveVector.z < 0)
+        {
+            moveVector.z += 0.01f;
+
+            _rigidbody.velocity = moveVector;
+        }
     }
 
     private IEnumerator DamagedBehavior()
     {
-        isCollide = true;
+        state = PlayerState.IsCollide;
 
         _rigidbody.velocity = Vector3.zero;
 
@@ -61,7 +91,7 @@ public class PlayerMover : MonoBehaviour
         yield return new WaitForSeconds(damagedTime);
 
         //Debug.Log("collide");
-        isCollide = false;
+        state = PlayerState.Running;
     }
 
 }

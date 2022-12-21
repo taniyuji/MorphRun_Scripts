@@ -58,6 +58,15 @@ public class ShapeAnimation : MonoBehaviour
                 PlayMorphAnimation(i);
             });
         }
+
+        ResourceProvider.i.playerMover.isGoal.Subscribe(i =>
+        {
+            if(isGoal) return;
+            
+            isGoal = true;
+
+            SoundManager.i.PlayOneShot(7, 0.5f);
+        });
     }
 
     // Update is called once per frame
@@ -90,20 +99,20 @@ public class ShapeAnimation : MonoBehaviour
             isPlus = !isPlus;
         }
 
-        scaleVector = isPlus ? Vector3.one * 0.003f : Vector3.one * -0.003f;
+        scaleVector = isPlus ? Vector3.one * 0.001f : Vector3.one * -0.001f;
 
         transform.localScale += scaleVector;
     }
 
     private void collideEyes()
     {
-        if (playerMover.isCollide)//衝突した際に変更
+        if (playerMover.state == PlayerMover.PlayerState.IsCollide)//衝突した際に変更
         {
             eyesParent.sprite = eyesSprite[2].sprite;
 
             return;
         }
-        else if (!playerMover.isCollide && eyesParent.sprite == eyesSprite[2].sprite)//衝突挙動が終わり、まだ目が戻っていない場合
+        else if (playerMover.state == PlayerMover.PlayerState.Running && eyesParent.sprite == eyesSprite[2].sprite)//衝突挙動が終わり、まだ目が戻っていない場合
         {
             eyesParent.sprite = eyesSprite[0].sprite;
         }
@@ -134,11 +143,5 @@ public class ShapeAnimation : MonoBehaviour
         eyesParent.sprite = eyesSprite[0].sprite;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Goal"))
-        {
-            isGoal = true;
-        }
-    }
+    
 }

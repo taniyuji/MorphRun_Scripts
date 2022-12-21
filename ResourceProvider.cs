@@ -41,6 +41,14 @@ public class ResourceProvider : MonoBehaviour
     }
 
     [SerializeField]
+    private PlayerMover _playerMover;
+
+    public PlayerMover playerMover
+    {
+        get { return _playerMover; }
+    }
+
+    [SerializeField]
     private SpriteRenderer _ok;
 
     public SpriteRenderer ok

@@ -16,9 +16,16 @@ public class ShapeInputController : MonoBehaviour
 
     private CinemachineTransposer transposer;
 
+    RaycastHit hit;
+
     void Awake()
     {
         transposer = ResourceProvider.i.cineCam.GetCinemachineComponent<CinemachineTransposer>();
+    }
+
+    void Start()
+    {
+        Time.timeScale = 0;
     }
 
     // Update is called once per frame
@@ -34,21 +41,34 @@ public class ShapeInputController : MonoBehaviour
         {
             ResourceProvider.i.drawer.ChangeShape();
         }
-       
+        
         if (Input.GetMouseButtonDown(0))
         {
             CalculatePointerPosition();
+
+            //描写可能範囲より外から入力を始めた場合はここで返す
+            if (hit.collider == null || !hit.collider.gameObject.CompareTag("Player")) return;
+
+            //形を生成するスクリプトのマウス入力時の関数を呼び出す
             ResourceProvider.i.drawer.PenDown(drawPointerTransform.localPosition);
 
             var fixedPosition
                  = new Vector3(drawPointerTransform.localPosition.x, drawPointerTransform.localPosition.y, drawPointerTransform.localPosition.z + 0.6f);
 
             getPointerDownPosition = fixedPosition;
+
+            return;
         }
+
+        //描写可能範囲より外から入力を始めた場合はここで返す
+        if(hit.collider == null || !hit.collider.gameObject.CompareTag("Player")) return;
 
         if (Input.GetMouseButton(0))
         {
+            if(Time.timeScale == 0) Time.timeScale = 1;
+            
             CalculatePointerPosition();
+            //形を生成するスクリプトのマウスをドラッグした時の関数を呼び出す
             ResourceProvider.i.drawer.PenMove(drawPointerTransform.localPosition);
         }
     }
@@ -59,8 +79,6 @@ public class ShapeInputController : MonoBehaviour
         var mouseInput = Input.mousePosition;
 
         Ray ray = Camera.main.ScreenPointToRay(mouseInput);
-
-        RaycastHit hit;
 
         //描写可能範囲外に描いた場合はここで返す
         //マウスをクリックするとPlayerTag持ちのキャンバスが出現し、それが描写可能範囲となる。

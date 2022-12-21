@@ -54,7 +54,7 @@ public class EnemyBehavior : MonoBehaviour
 
         if (intervalCounter < morphInterval) return;
 
-        if (playerMover.isCollide) return;
+        if (playerMover.state == PlayerMover.PlayerState.IsCollide) return;
 
         intervalCounter = 0;
 
