@@ -21,13 +21,14 @@ public class DrawPhysicsLine : MonoBehaviour
     [SerializeField] private int instantiateAmount;
 
     [SerializeField]
-    private float minimumLength = 2;
+    private float minimumLength = 2;//線の最小の短さ
 
     // 一つ前のタッチされたpositionを保持
     private Vector3 touchPos;
 
     Camera mainCamera;
 
+    //1つ前の線と生成中の線を二つのリストにして使い分け
     public List<GameObject> lines1 { get; private set; } = new List<GameObject>();
 
     public List<GameObject> lines2 { get; private set; } = new List<GameObject>();
@@ -52,6 +53,7 @@ public class DrawPhysicsLine : MonoBehaviour
 
         mainCamera = Camera.main;
 
+        //線生成に必要なオブジェクトをあらかじめ生成
         for (int i = 0; i < instantiateAmount; i++)
         {
             GameObject obj = Instantiate(linePrefab) as GameObject;
@@ -71,11 +73,11 @@ public class DrawPhysicsLine : MonoBehaviour
         }
     }
 
-    public void ChangeShape()
+    public void ChangeShape()//Draw終了時に前の線と描いた線を入れ替えるメソッド。MouseButtonUp時に呼ばれる
     {
         ResourceProvider.i.ok.enabled = false;
         
-        if (!canDraw)
+        if (!canDraw)//線の長さが足りなかった場合は描写途中だったオブジェクトを初期化し返す
         {
             for (int i = 0; i < index; i++)
             {
@@ -105,6 +107,7 @@ public class DrawPhysicsLine : MonoBehaviour
             boxCollider.enabled = false;
         }
 
+        //現在表示中の線のリストを非表示にし、もう一つの方のリストを表示する
         for (int i = 0; i < instantiateAmount; i++)
         {
             if (!isUsingList1)
@@ -134,7 +137,7 @@ public class DrawPhysicsLine : MonoBehaviour
         canDraw = false;
     }
 
-    public void PenDown(Vector3 drawPos)
+    public void PenDown(Vector3 drawPos)//次に使用するリストを決めるメソッド。MouseButtonDown時に呼ばれる。
     {
         touchPos = drawPos;
 
@@ -148,7 +151,7 @@ public class DrawPhysicsLine : MonoBehaviour
         }
     }
 
-    public void PenMove(Vector3 drawPos)
+    public void PenMove(Vector3 drawPos)//引数のPointerポジションをもとに線を生成していくメソッド。MouseButton時に呼ばれる。
     {
         Vector3 startPos = touchPos;
         Vector3 endPos = drawPos;
@@ -172,18 +175,19 @@ public class DrawPhysicsLine : MonoBehaviour
             return;
         }
 
+        //１フレーム前の入力と現在の入力の距離が線を構成する四角形プレファブ一個分より長い場合
         if (distance > lineLength * Time.deltaTime / Time.fixedDeltaTime)
         {
             // GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-            shapeLength += distance;
+            shapeLength += distance;//線の長さを更新
 
-            GameObject obj = isUsingList1 ? lines1[index] : lines2[index];
+            GameObject obj = isUsingList1 ? lines1[index] : lines2[index];//使用されていないほうのリストを使う
 
             obj.transform.parent = transform;
 
-            obj.transform.localPosition = (startPos + endPos) / 2;
-            obj.transform.right = (endPos - startPos).normalized;
+            obj.transform.localPosition = (startPos + endPos) / 2;//２つの入力の間に配置
+            obj.transform.right = (endPos - startPos).normalized;//２つの入力のベクトル方向に傾ける
             obj.transform.localScale = new Vector3(distance + lineLengthExtension, lineWidth, lineZ);
 
             touchPos = endPos;

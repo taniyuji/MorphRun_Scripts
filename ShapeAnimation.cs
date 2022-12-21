@@ -6,14 +6,14 @@ using UnityEngine.UI;
 using System;
 using UniRx;
 
-//変形時のアニメーションを制御するスクリプト
+//変形時のアニメーションを制御するスクリプト。敵とプレイヤーに使用
 public class ShapeAnimation : MonoBehaviour
 {
     [SerializeField]
-    private SpriteRenderer eyesParent;
+    private SpriteRenderer eyesParent;//この親オブジェクトのSpriteを変更する
 
     [SerializeField]
-    private List<SpriteRenderer> eyesSprite;
+    private List<SpriteRenderer> eyesSprites;//目のSpriteたち
 
     [SerializeField]
     private float scaleTime = 0.1f;
@@ -51,14 +51,15 @@ public class ShapeAnimation : MonoBehaviour
     {
         defaultTransform = transform;
 
-        if (enemyBehavior != null)
+        if (enemyBehavior != null)//敵を変形させる場合
         {
+            //UniRxで目の位置を受け取る
             enemyBehavior.morphed.Subscribe(i =>
             {
                 PlayMorphAnimation(i);
             });
         }
-
+        //プレイヤーがゴールした場合
         ResourceProvider.i.playerMover.isGoal.Subscribe(i =>
         {
             if(isGoal) return;
@@ -69,7 +70,6 @@ public class ShapeAnimation : MonoBehaviour
         });
     }
 
-    // Update is called once per frame
     void Update()
     {
         GoalAnimation();
@@ -88,7 +88,7 @@ public class ShapeAnimation : MonoBehaviour
     {
         if (!isGoal) return;
 
-        eyesParent.sprite = eyesSprite[3].sprite;
+        eyesParent.sprite = eyesSprites[3].sprite;
 
         scaleTimeCounter += Time.deltaTime;
 
@@ -108,16 +108,18 @@ public class ShapeAnimation : MonoBehaviour
     {
         if (playerMover.state == PlayerMover.PlayerState.IsCollide)//衝突した際に変更
         {
-            eyesParent.sprite = eyesSprite[2].sprite;
+            eyesParent.sprite = eyesSprites[2].sprite;
 
             return;
         }
-        else if (playerMover.state == PlayerMover.PlayerState.Running && eyesParent.sprite == eyesSprite[2].sprite)//衝突挙動が終わり、まだ目が戻っていない場合
+        else if (playerMover.state == PlayerMover.PlayerState.Running && eyesParent.sprite == eyesSprites[2].sprite)//衝突挙動が終わり、まだ目が戻っていない場合
         {
-            eyesParent.sprite = eyesSprite[0].sprite;
+            eyesParent.sprite = eyesSprites[0].sprite;
         }
     }
 
+    //変形時のアニメーションを行うメソッド
+    //プレイヤーの場合はタイミングの兼ね合い上、ShapeInputControllerにてこのメソッドが呼ばれる
     public void PlayMorphAnimation(Vector3 eyePosition)
     {
         scaleVector = Vector3.one * scaleAmount;
@@ -136,11 +138,11 @@ public class ShapeAnimation : MonoBehaviour
 
     private IEnumerator blink()
     {
-        eyesParent.sprite = eyesSprite[1].sprite;
+        eyesParent.sprite = eyesSprites[1].sprite;
 
         yield return new WaitForSeconds(0.1f);
 
-        eyesParent.sprite = eyesSprite[0].sprite;
+        eyesParent.sprite = eyesSprites[0].sprite;
     }
 
     
