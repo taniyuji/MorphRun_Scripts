@@ -144,6 +144,7 @@ public class AutoLineUp : MonoBehaviour
         play = false;
     }
 
+    //整理や生成をする対象のオブジェクトの情報を取得
     private void SetDefaultValues()
     {
         if (!remainPrefabInformation && arrangeFromTargetPosition)
@@ -189,6 +190,7 @@ public class AutoLineUp : MonoBehaviour
         //Debug.Log("generateStart");
     }
 
+    //対象オブジェクトの位置を算出
     private void FixPosition(int i)
     {
         if (i == 0)
@@ -222,6 +224,7 @@ public class AutoLineUp : MonoBehaviour
         }
     }
 
+    //生成する場合は生成し算出したポジションに動かす
     private void InstantiateAndMovePosition()
     {
         GameObject generatedTarget;
@@ -275,7 +278,7 @@ public class AutoLineUp : MonoBehaviour
         }
     }
 
-    private void UnSetValues()
+    private void UnSetValues()//全ての変数を初期化
     {
         scale = Vector3.zero;
 

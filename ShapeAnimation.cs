@@ -29,6 +29,10 @@ public class ShapeAnimation : MonoBehaviour
 
     private PlayerMover playerMover;
 
+    private DrawPhysicsLine drawer;
+
+    private ShapeInputController inputController;
+
     private EnemyBehavior enemyBehavior;
 
     private int blinkJudgeNum;
@@ -43,6 +47,10 @@ public class ShapeAnimation : MonoBehaviour
     void Awake()
     {
         playerMover = GetComponent<PlayerMover>();
+
+        drawer = GetComponent<DrawPhysicsLine>();
+
+        inputController = GetComponent<ShapeInputController>();
 
         enemyBehavior = GetComponent<EnemyBehavior>();
     }
@@ -59,11 +67,19 @@ public class ShapeAnimation : MonoBehaviour
                 PlayMorphAnimation(i);
             });
         }
-        //プレイヤーがゴールした場合
-        ResourceProvider.i.playerMover.isGoal.Subscribe(i =>
+
+        if (drawer != null)
         {
-            if(isGoal) return;
-            
+            drawer.changeShape.Subscribe(i =>
+            {
+                PlayMorphAnimation(inputController.getPointerDownPosition);
+            });
+        }
+
+        playerMover.isGoal.Subscribe(i =>
+        {
+            if (isGoal) return;
+
             isGoal = true;
 
             SoundManager.i.PlayOneShot(7, 0.5f);
@@ -72,9 +88,9 @@ public class ShapeAnimation : MonoBehaviour
 
     void Update()
     {
-        GoalAnimation();
+        GoalAnimation();//ゴール通知を受け取ったらゴールアニメーションを作動させる
 
-        if(isGoal) return;
+        if (isGoal) return;
 
         collideEyes();
 
@@ -84,6 +100,7 @@ public class ShapeAnimation : MonoBehaviour
         }
     }
 
+    //キラキラ目に変更し、スケールの拡大縮小を繰り返す
     private void GoalAnimation()
     {
         if (!isGoal) return;
@@ -104,6 +121,7 @@ public class ShapeAnimation : MonoBehaviour
         transform.localScale += scaleVector;
     }
 
+    //衝突した際の表情を変更
     private void collideEyes()
     {
         if (playerMover.state == PlayerMover.PlayerState.IsCollide)//衝突した際に変更
@@ -119,7 +137,7 @@ public class ShapeAnimation : MonoBehaviour
     }
 
     //変形時のアニメーションを行うメソッド
-    //プレイヤーの場合はタイミングの兼ね合い上、ShapeInputControllerにてこのメソッドが呼ばれる
+    //プレイヤーの場合はタイミングの兼ね合い上、DrawPhysicsLineスクリプトにてこのメソッドが呼ばれる
     public void PlayMorphAnimation(Vector3 eyePosition)
     {
         scaleVector = Vector3.one * scaleAmount;
@@ -145,5 +163,5 @@ public class ShapeAnimation : MonoBehaviour
         eyesParent.sprite = eyesSprites[0].sprite;
     }
 
-    
+
 }

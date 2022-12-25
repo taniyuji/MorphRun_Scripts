@@ -62,6 +62,7 @@ public class PlayerMover : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        //ゴールのコライダーと衝突したらゴールしたことをShapeAnimationスクリプトに通知
         if (other.gameObject.CompareTag("Goal"))
         {
             _isGoal.OnNext(Unit.Default);
@@ -72,7 +73,7 @@ public class PlayerMover : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (state == PlayerState.Running)//ゲーム中の場合
+        if (state == PlayerState.Running)//ゲーム中の場合は前に動かす
         {
             _rigidbody.velocity = moveVector;
         }
@@ -84,6 +85,7 @@ public class PlayerMover : MonoBehaviour
         }
     }
 
+    //障害物と衝突した時の挙動
     private IEnumerator DamagedBehavior()
     {
         state = PlayerState.IsCollide;

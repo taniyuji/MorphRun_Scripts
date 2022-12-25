@@ -32,7 +32,6 @@ public class EnemyBehavior : MonoBehaviour
 
     private PlayerMover playerMover;
 
-    // Start is called before the first frame update
     void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
@@ -50,6 +49,7 @@ public class EnemyBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //morphIntervalの間隔で形を変えていく
         intervalCounter += Time.deltaTime;
 
         if (intervalCounter < morphInterval) return;
@@ -65,7 +65,7 @@ public class EnemyBehavior : MonoBehaviour
             boxCollider.enabled = false;
         }
 
-        ChangeShapes();
+        ChangeShapes();//次の形をランダムに変更するメソッド
     }
 
     private void ChangeShapes()

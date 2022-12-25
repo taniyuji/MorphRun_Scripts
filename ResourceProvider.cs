@@ -17,35 +17,11 @@ public class ResourceProvider : MonoBehaviour
     }
 
     [SerializeField]
-    private ShapeInputController _inputController;
-
-    public ShapeInputController inputController
-    {
-        get { return _inputController; }
-    }
-
-    [SerializeField]
     private DrawPhysicsLine _drawer;
 
     public DrawPhysicsLine drawer
     {
         get { return _drawer; }
-    }
-
-    [SerializeField]
-    private ShapeAnimation _shapeAnimation;
-
-    public ShapeAnimation shapeAnimation
-    {
-        get { return _shapeAnimation; }
-    }
-
-    [SerializeField]
-    private PlayerMover _playerMover;
-
-    public PlayerMover playerMover
-    {
-        get { return _playerMover; }
     }
 
     [SerializeField]

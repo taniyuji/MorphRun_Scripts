@@ -16,7 +16,7 @@ public class ShapeInputController : MonoBehaviour
 
     private CinemachineTransposer transposer;
 
-    RaycastHit hit;
+    private RaycastHit hit;
 
     void Awake()
     {
@@ -44,7 +44,7 @@ public class ShapeInputController : MonoBehaviour
         
         if (Input.GetMouseButtonDown(0))
         {
-            CalculatePointerPosition();
+            CalculatePointerPosition();//pointerのポジションを取得
 
             //描写可能範囲より外から入力を始めた場合はここで返す
             if (hit.collider == null || !hit.collider.gameObject.CompareTag("Player")) return;
@@ -60,14 +60,14 @@ public class ShapeInputController : MonoBehaviour
             return;
         }
 
-        //描写可能範囲より外から入力を始めた場合はここで返す
+        //GetMouseButtonDownにて描写可能範囲より外から入力を始めた場合はここで返す
         if(hit.collider == null || !hit.collider.gameObject.CompareTag("Player")) return;
 
         if (Input.GetMouseButton(0))
         {
             if(Time.timeScale == 0) Time.timeScale = 1;
             
-            CalculatePointerPosition();
+            CalculatePointerPosition();//pointerのポジションを取得
             //形を生成するスクリプトのマウスをドラッグした時の関数を呼び出す
             ResourceProvider.i.drawer.PenMove(drawPointerTransform.localPosition);
         }

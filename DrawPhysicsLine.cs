@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UniRx;
 using System;
 
+//オブジェクトを描くスクリプト（線を生成する部分の機能は社員の方が実装。それをもとにこのゲーム用に改良）
+//私もメッシュ変形を用いて線を描く機能を実装したので、詳しくは下記のポートフォリオを参照していただけると幸いです。
+//
 public class DrawPhysicsLine : MonoBehaviour
 {
 
@@ -45,6 +48,13 @@ public class DrawPhysicsLine : MonoBehaviour
 
     private bool canDraw = false;
 
+    private Subject<Unit> _changeShape = new Subject<Unit>();
+
+    public IObservable<Unit> changeShape
+    {
+        get { return _changeShape; }
+    }
+
     void Awake()
     {
         mesh = GetComponent<MeshRenderer>();
@@ -53,7 +63,7 @@ public class DrawPhysicsLine : MonoBehaviour
 
         mainCamera = Camera.main;
 
-        //線生成に必要なオブジェクトをあらかじめ生成
+        //線生成に必要なオブジェクトをあらかじめプールする
         for (int i = 0; i < instantiateAmount; i++)
         {
             GameObject obj = Instantiate(linePrefab) as GameObject;
@@ -76,7 +86,7 @@ public class DrawPhysicsLine : MonoBehaviour
     public void ChangeShape()//Draw終了時に前の線と描いた線を入れ替えるメソッド。MouseButtonUp時に呼ばれる
     {
         ResourceProvider.i.ok.enabled = false;
-        
+
         if (!canDraw)//線の長さが足りなかった場合は描写途中だったオブジェクトを初期化し返す
         {
             for (int i = 0; i < index; i++)
@@ -101,6 +111,7 @@ public class DrawPhysicsLine : MonoBehaviour
             return;
         }
 
+        //初期状態の四角形メッシュを非表示にする
         if (boxCollider.enabled)
         {
             mesh.enabled = false;
@@ -128,9 +139,8 @@ public class DrawPhysicsLine : MonoBehaviour
             }
         }
 
-        ResourceProvider.i.shapeAnimation.PlayMorphAnimation(ResourceProvider.i.inputController.getPointerDownPosition);
-
-        //Debug.Log("shifted" + lines1[0].activeSelf + lines2[0].activeSelf);
+        //変形終了したことをShapeAnimationスクリプトへ通知
+        _changeShape.OnNext(Unit.Default);
 
         index = 0;
         shapeLength = 0;
@@ -195,6 +205,6 @@ public class DrawPhysicsLine : MonoBehaviour
             index++;
         }
 
-       
+
     }
 }
