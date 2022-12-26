@@ -5,11 +5,11 @@ using UniRx;
 using System;
 
 //オブジェクトを描くスクリプト（線を生成する部分の機能は社員の方が実装。それをもとにこのゲーム用に改良）
-//私もメッシュ変形を用いて線を描く機能を実装したので、詳しくは下記のポートフォリオを参照していただけると幸いです。
-//
+//私もメッシュ変形を用いて線を描く機能を実装したので、詳しくは下記を参照していただけると幸いです。
+//https://unityroom.com/games/stopthecar
+//https://github.com/taniyuji/StopTheCar_Scripts/blob/master/LineDrawer_v2.cs
 public class DrawPhysicsLine : MonoBehaviour
 {
-
     [Header("線を構成するブロック")]
     [SerializeField] GameObject linePrefab;
     [Header("線の単位長")]
